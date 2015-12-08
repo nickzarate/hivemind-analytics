@@ -3,6 +3,9 @@ from flask import Flask
 
 app = Flask(__name__)
 
+@app.route('/')
+def other():
+    return 'Main Application Page! add: /hello to see another page!'
 
 @app.route('/hello')
 def hello():
