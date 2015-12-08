@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
@@ -9,7 +9,16 @@ def other():
 
 @app.route('/hello')
 def hello():
-    return 'Hello World!'
+    list = [
+        {'message': 'Hello World!!'},
+        {'test':'Test hello world.'}
+    ]
+    results = jsonify(results=list)
+    list2 = [
+        {'success': results},
+        {'error': 'INSERT ERROR MESSAGE'}
+    ]
+    return jsonify(results=list2)
 
 if __name__ == '__main__':
     app.run(debug = True)
