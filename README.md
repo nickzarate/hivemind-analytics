@@ -16,7 +16,6 @@ password: NZtennis15
 Heroku Command Line Documentation: https://devcenter.heroku.com/categories/command-line
 (Has a link for the Heroku Toolbelt, which is how you control deployment of code to the Heroku Application)
 
-<<<<<<< HEAD
 GIT COMMANDS (in general):
 
 git add .               : adds all modified files to the "add" list
@@ -31,10 +30,11 @@ of that code to our actual server on Heroku.
 "git add ." and "git commit -m "comment"" will prep code to be deployed to either github or heroku, then...
 
 to deploy code to Github:
+
 git push origin master
 
 to deploy code to Heroku Application:
+
 git push heroku master
-=======
-kTesting....
->>>>>>> 0283ebfe05da01ea4e10bfc4c72ad204c65fe124
+
+Testing....
