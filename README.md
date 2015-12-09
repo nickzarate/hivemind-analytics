@@ -29,8 +29,8 @@ of that code to our actual server on Heroku.
 
 "git add ." and "git commit -m "comment"" will prep code to be deployed to either github or heroku, then...
 
-to deploy code to Github:
-
+to deploy code to Github: 
 git push origin master
 
-to deploy code to Heroku Application: \ngit push heroku master
+to deploy code to Heroku Application:  
+git push heroku master
