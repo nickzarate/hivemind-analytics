@@ -8,7 +8,7 @@ def other():
     return 'Main Application Page! add: /hello to see another page!'
 
 @app.route('/hello')
-def hello():
+def helloWorld():
     list = [
         {'message': 'Hello World!!'},
         {'test':'Test hello world.'}
@@ -18,7 +18,7 @@ def hello():
         {'success': results},
         {'error': 'INSERT ERROR MESSAGE'}
     ]
-    return {'success': 'Hello World!!'}
+    return {:success => 'Hello World!!'}
 
 if __name__ == '__main__':
     app.run()
