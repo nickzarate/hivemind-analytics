@@ -15,9 +15,9 @@ Heroku Command Line Documentation: https://devcenter.heroku.com/categories/comma
 
 GIT COMMANDS (in general):
 
-git add .               : adds all modified files to the "add" list  
-git commit -m "comment" : commits all files on the "add" list  
-git push                : pushes all commits to github
+git add .		: adds all modified files to the "add" list  
+git commit -m "comment"	: commits all files on the "add" list  
+git push      		: pushes all commits to github
 
 All of these files represent our server-side Heroku code. However, making changes to any of this code that you can see on Github does not actually DEPLOY any
 of that code to our actual server on Heroku.
