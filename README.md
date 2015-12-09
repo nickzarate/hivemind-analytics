@@ -33,8 +33,4 @@ to deploy code to Github:
 
 git push origin master
 
-to deploy code to Heroku Application:
-
-git push heroku master
-
-Testing....
+to deploy code to Heroku Application: \ngit push heroku master
