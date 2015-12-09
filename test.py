@@ -8,7 +8,7 @@ def other():
     return 'Main Application Page! add: /hello to see another page!'
 
 @app.route('/hello')
-def hello():
+def helloWorld():
     list = [
         {'message': 'Hello World!!'},
         {'test':'Test hello world.'}
