@@ -18,7 +18,7 @@ def hello():
         {'success': results},
         {'error': 'INSERT ERROR MESSAGE'}
     ]
-    return jsonify(results=list2)
+    return {'success': results}
 
 if __name__ == '__main__':
     app.run()

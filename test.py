@@ -18,7 +18,7 @@ def hello():
         {'success': results},
         {'error': 'INSERT ERROR MESSAGE'}
     ]
-    return {'success': results}
+    return {'success': 'Hello World!!'}
 
 if __name__ == '__main__':
     app.run()
