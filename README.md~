@@ -13,4 +13,8 @@ password: NZtennis15
 Heroku Command Line Documentation: https://devcenter.heroku.com/categories/command-line
 (Has a link for the Heroku Toolbelt, which is how you control deployment of code to the Heroku Application)
 
+<<<<<<< HEAD
 Testing
+=======
+Testing....
+>>>>>>> 0283ebfe05da01ea4e10bfc4c72ad204c65fe124
