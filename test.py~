@@ -18,7 +18,7 @@ def helloWorld():
         {'success': results},
         {'error': 'INSERT ERROR MESSAGE'}
     ]
-    return {:success => 'Hello World!!'}
+    return {'success': 'Hello World!!'}
 
 if __name__ == '__main__':
     app.run()
