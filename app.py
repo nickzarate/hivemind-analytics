@@ -60,13 +60,13 @@ def get_answer_history_r():
     'X-Parse-REST-API-Key': REST_API_KEY
   }
 
-  response = requests.get("http://api.parse.com/1/classes/AnswerHistory", params = payload)
+  response = requests.get("http://api.parse.com/1/classes/AnswerHistory/", params = payload)
   return response.json()
 
 
 @app.route('/answerhistory')
 def get_answer_history():
-  connection = httplib.HTTPSConnection('api.parse.com')
+  connection = httplib.HTTPSConnection('api.parse.com', 443)
   connection.connect()
   connection.request('GET', '/1/classes/AnswerHistory', '', {
     "X-Parse-Application-Id": APPLICATION_ID,
