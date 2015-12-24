@@ -52,6 +52,17 @@ def page_not_found(e):
   return 'page not found'
 
 
+@app.route('/answerhistory-r')
+def get_answer_history_r():
+
+  payload = {
+    'X-Parse-Application-Id': APPLICATION_ID,
+    'X-Parse-REST-API-Key': REST_API_KEY
+  }
+
+  response = requests.get("http://api.parse.com/1/classes/AnswerHistory", params = payload)
+  return response.json()
+
 
 @app.route('/answerhistory')
 def get_answer_history():
