@@ -72,6 +72,6 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y python
     sudo apt-get install -y python-dev
     sudo apt-get install -y python-pip
-    sudo pip install -r /vagrant/config/requirements.txt
+    sudo pip install -r /vagrant/requirements.txt
   SHELL
 end
