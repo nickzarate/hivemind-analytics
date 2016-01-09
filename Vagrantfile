@@ -1,3 +1,4 @@
+#!/usr/bin/env Ruby
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
@@ -68,6 +69,8 @@ Vagrant.configure(2) do |config|
     echo "Provisioning..."
     sudo apt-get update
     sudo apt-get upgrade
+    sudo apt-get install -y vim
+    sudo apt-get install -y curl
     sudo apt-get install -y git
     sudo apt-get install -y python
     sudo apt-get install -y python-dev
