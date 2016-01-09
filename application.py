@@ -4,7 +4,7 @@ import json, httplib, requests
 
 APPLICATION_ID = 'JnIfTyw9Dl4Uq6MDo4uqnhOYwbWPmdrkBuP2NvnK'
 REST_API_KEY = '00Ey9OvtSr8nt56g6LKSFdozCPM23GRhF29zgzAN'
-app = Flask(__name__)
+application = Flask(__name__)
 
 
 @app.route('/')
@@ -75,16 +75,16 @@ def create_task():
 @app.route("/json", methods=['GET','POST'])
 def json():
 
-    app.logger.debug("JSON received...")
-    app.logger.debug(request.json)
+  app.logger.debug("JSON received...")
+  app.logger.debug(request.json)
 
-    if request.json:
-        mydata = request.json # will be 
+  if request.json:
+    mydata = request.json # will be 
 
-        return "Thanks. Your age is %s" % mydata.get("age")
+    return "Thanks. Your age is %s" % mydata.get("age")
 
-    else:
-        return "no json received"
+  else:
+    return "no json received"
 
 @app.route('/api/add_message/<uuid>', methods=['GET', 'POST'])
 def add_message(uuid):
@@ -126,9 +126,7 @@ def page_not_found(e):
   return 'page not foundddd!'
 
 
-
-
 if __name__ == "__main__":
-  app.debug = True
-  app.run(host="0.0.0.0")
+  application.debug = True
+  application.run()
 
