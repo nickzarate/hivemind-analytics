@@ -1,6 +1,7 @@
+from flask import render_template
 from hivemind import app
 
 @app.route('/')
 def hello_world():
-    return 'Thank you for your patronage. Have a nice day.'
+    return render_template('index.html')
 
