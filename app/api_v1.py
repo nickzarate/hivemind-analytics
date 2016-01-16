@@ -20,6 +20,7 @@ def api_echo():
 @crossdomain(origin='*', methods=['GET','PUT','POST','OPTIONS', 'DELETE'], headers=['Content-Type']) # TODO find out how this breaks with max_age
 def get_phi():
   payload = request.get_json()
+  print payload
   covariates = payload[u'covariates']
   p = payload[u'p']
   phi = phi_ols_estimator(covariates, p)
