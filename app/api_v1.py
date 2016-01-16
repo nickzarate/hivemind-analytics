@@ -1,5 +1,5 @@
 from flask import jsonify, abort, request
-import json, httplib, requests, array
+import json, httplib, array
 
 from app import app
 from crossdomain import crossdomain
