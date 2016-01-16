@@ -1,7 +1,7 @@
 from flask import jsonify, abort, request
 import json, httplib, requests, array
 
-from hivemind import app
+from app import app
 from crossdomain import crossdomain
 from algorithms import phi_ols_estimator
 
