@@ -1,2 +1,2 @@
-web: gunicorn app:run.py --log-file=-
+web: gunicorn app:app --log-file=-
 
