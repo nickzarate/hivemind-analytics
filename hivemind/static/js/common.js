@@ -1125,7 +1125,7 @@ var Example = Example || {}; Example["common"] =
 	 * will remain to ensure logic does not differ in production.
 	 */
 	
-	function invariant(condition, format, a, b, c, d, e, f) {
+	var invariant = function (condition, format, a, b, c, d, e, f) {
 	  if (process.env.NODE_ENV !== 'production') {
 	    if (format === undefined) {
 	      throw new Error('invariant requires an error message argument');
@@ -1139,16 +1139,15 @@ var Example = Example || {}; Example["common"] =
 	    } else {
 	      var args = [a, b, c, d, e, f];
 	      var argIndex = 0;
-	      error = new Error(format.replace(/%s/g, function () {
+	      error = new Error('Invariant Violation: ' + format.replace(/%s/g, function () {
 	        return args[argIndex++];
 	      }));
-	      error.name = 'Invariant Violation';
 	    }
 	
 	    error.framesToPop = 1; // we don't care about invariant's own frame
 	    throw error;
 	  }
-	}
+	};
 	
 	module.exports = invariant;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
@@ -10575,8 +10574,8 @@ var Example = Example || {}; Example["common"] =
 	     */
 	    // autoCapitalize and autoCorrect are supported in Mobile Safari for
 	    // keyboard hints.
-	    autoCapitalize: MUST_USE_ATTRIBUTE,
-	    autoCorrect: MUST_USE_ATTRIBUTE,
+	    autoCapitalize: null,
+	    autoCorrect: null,
 	    // autoSave allows WebKit/Blink to persist values of input fields on page reloads
 	    autoSave: null,
 	    // color is for Safari mask-icon link
@@ -10607,7 +10606,9 @@ var Example = Example || {}; Example["common"] =
 	    httpEquiv: 'http-equiv'
 	  },
 	  DOMPropertyNames: {
+	    autoCapitalize: 'autocapitalize',
 	    autoComplete: 'autocomplete',
+	    autoCorrect: 'autocorrect',
 	    autoFocus: 'autofocus',
 	    autoPlay: 'autoplay',
 	    autoSave: 'autosave',
@@ -13686,7 +13687,7 @@ var Example = Example || {}; Example["common"] =
 	    var value = LinkedValueUtils.getValue(props);
 	
 	    if (value != null) {
-	      updateOptions(this, Boolean(props.multiple), value);
+	      updateOptions(this, props, value);
 	    }
 	  }
 	}
@@ -16721,14 +16722,11 @@ var Example = Example || {}; Example["common"] =
 	 * @typechecks
 	 */
 	
-	/* eslint-disable fb-www/typeof-undefined */
-	
 	/**
 	 * Same as document.activeElement but wraps in a try-catch block. In IE it is
 	 * not safe to call document.activeElement if there is nothing focused.
 	 *
-	 * The activeElement will be null only if the document or document body is not
-	 * yet defined.
+	 * The activeElement will be null only if the document or document body is not yet defined.
 	 */
 	'use strict';
 	
@@ -16736,6 +16734,7 @@ var Example = Example || {}; Example["common"] =
 	  if (typeof document === 'undefined') {
 	    return null;
 	  }
+	
 	  try {
 	    return document.activeElement || document.body;
 	  } catch (e) {
@@ -18475,9 +18474,7 @@ var Example = Example || {}; Example["common"] =
 	  'setValueForProperty': 'update attribute',
 	  'setValueForAttribute': 'update attribute',
 	  'deleteValueForProperty': 'remove attribute',
-	  'setValueForStyles': 'update styles',
-	  'replaceNodeWithMarkup': 'replace',
-	  'updateTextContent': 'set textContent'
+	  'dangerouslyReplaceNodeWithMarkupByID': 'replace'
 	};
 	
 	function getTotalTime(measurements) {
@@ -18669,23 +18666,18 @@ var Example = Example || {}; Example["common"] =
 	'use strict';
 	
 	var performance = __webpack_require__(145);
-	
-	var performanceNow;
+	var curPerformance = performance;
 	
 	/**
 	 * Detect if we can use `window.performance.now()` and gracefully fallback to
 	 * `Date.now()` if it doesn't exist. We need to support Firefox < 15 for now
 	 * because of Facebook's testing infrastructure.
 	 */
-	if (performance.now) {
-	  performanceNow = function () {
-	    return performance.now();
-	  };
-	} else {
-	  performanceNow = function () {
-	    return Date.now();
-	  };
+	if (!curPerformance || !curPerformance.now) {
+	  curPerformance = Date;
 	}
+	
+	var performanceNow = curPerformance.now.bind(curPerformance);
 	
 	module.exports = performanceNow;
 
@@ -18734,7 +18726,7 @@ var Example = Example || {}; Example["common"] =
 	
 	'use strict';
 	
-	module.exports = '0.14.6';
+	module.exports = '0.14.3';
 
 /***/ },
 /* 147 */
@@ -22342,7 +22334,7 @@ var Example = Example || {}; Example["common"] =
 	'use strict';
 	module.exports = function (str) {
 		return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
-			return '%' + c.charCodeAt(0).toString(16).toUpperCase();
+			return '%' + c.charCodeAt(0).toString(16);
 		});
 	};
 
@@ -24628,10 +24620,21 @@ var Example = Example || {}; Example["common"] =
 
 	'use strict';
 	
-	var Provider = __webpack_require__(216);
-	var connect = __webpack_require__(218);
+	exports.__esModule = true;
+	exports.connect = exports.Provider = undefined;
 	
-	module.exports = { Provider: Provider, connect: connect };
+	var _Provider = __webpack_require__(216);
+	
+	var _Provider2 = _interopRequireDefault(_Provider);
+	
+	var _connect = __webpack_require__(218);
+	
+	var _connect2 = _interopRequireDefault(_connect);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	exports.Provider = _Provider2.default;
+	exports.connect = _connect2.default;
 
 /***/ },
 /* 216 */
@@ -24639,19 +24642,22 @@ var Example = Example || {}; Example["common"] =
 
 	'use strict';
 	
+	exports.__esModule = true;
+	exports.default = undefined;
+	
+	var _react = __webpack_require__(1);
+	
+	var _storeShape = __webpack_require__(217);
+	
+	var _storeShape2 = _interopRequireDefault(_storeShape);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var _require = __webpack_require__(1);
-	
-	var Component = _require.Component;
-	var PropTypes = _require.PropTypes;
-	var Children = _require.Children;
-	
-	var storeShape = __webpack_require__(217);
 	
 	var didWarnAboutReceivingStore = false;
 	function warnAboutReceivingStore() {
@@ -24692,21 +24698,21 @@ var Example = Example || {}; Example["common"] =
 	  Provider.prototype.render = function render() {
 	    var children = this.props.children;
 	
-	    return Children.only(children);
+	    return _react.Children.only(children);
 	  };
 	
 	  return Provider;
-	})(Component);
+	})(_react.Component);
+	
+	exports.default = Provider;
 	
 	Provider.propTypes = {
-	  store: storeShape.isRequired,
-	  children: PropTypes.element.isRequired
+	  store: _storeShape2.default.isRequired,
+	  children: _react.PropTypes.element.isRequired
 	};
 	Provider.childContextTypes = {
-	  store: storeShape.isRequired
+	  store: _storeShape2.default.isRequired
 	};
-	
-	module.exports = Provider;
 
 /***/ },
 /* 217 */
@@ -24714,17 +24720,15 @@ var Example = Example || {}; Example["common"] =
 
 	'use strict';
 	
-	var _require = __webpack_require__(1);
+	exports.__esModule = true;
 	
-	var PropTypes = _require.PropTypes;
+	var _react = __webpack_require__(1);
 	
-	var storeShape = PropTypes.shape({
-	  subscribe: PropTypes.func.isRequired,
-	  dispatch: PropTypes.func.isRequired,
-	  getState: PropTypes.func.isRequired
+	exports.default = _react.PropTypes.shape({
+	  subscribe: _react.PropTypes.func.isRequired,
+	  dispatch: _react.PropTypes.func.isRequired,
+	  getState: _react.PropTypes.func.isRequired
 	});
-	
-	module.exports = storeShape;
 
 /***/ },
 /* 218 */
@@ -24734,23 +24738,42 @@ var Example = Example || {}; Example["common"] =
 	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
+	exports.__esModule = true;
+	exports.default = connect;
+	
+	var _react = __webpack_require__(1);
+	
+	var _storeShape = __webpack_require__(217);
+	
+	var _storeShape2 = _interopRequireDefault(_storeShape);
+	
+	var _shallowEqual = __webpack_require__(219);
+	
+	var _shallowEqual2 = _interopRequireDefault(_shallowEqual);
+	
+	var _isPlainObject = __webpack_require__(220);
+	
+	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
+	
+	var _wrapActionCreators = __webpack_require__(221);
+	
+	var _wrapActionCreators2 = _interopRequireDefault(_wrapActionCreators);
+	
+	var _hoistNonReactStatics = __webpack_require__(222);
+	
+	var _hoistNonReactStatics2 = _interopRequireDefault(_hoistNonReactStatics);
+	
+	var _invariant = __webpack_require__(163);
+	
+	var _invariant2 = _interopRequireDefault(_invariant);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-	
-	var _require = __webpack_require__(1);
-	
-	var Component = _require.Component;
-	var createElement = _require.createElement;
-	
-	var storeShape = __webpack_require__(217);
-	var shallowEqual = __webpack_require__(219);
-	var isPlainObject = __webpack_require__(220);
-	var wrapActionCreators = __webpack_require__(221);
-	var hoistStatics = __webpack_require__(222);
-	var invariant = __webpack_require__(163);
 	
 	var defaultMapStateToProps = function defaultMapStateToProps(state) {
 	  return {};
@@ -24774,7 +24797,7 @@ var Example = Example || {}; Example["common"] =
 	
 	  var shouldSubscribe = Boolean(mapStateToProps);
 	  var finalMapStateToProps = mapStateToProps || defaultMapStateToProps;
-	  var finalMapDispatchToProps = isPlainObject(mapDispatchToProps) ? wrapActionCreators(mapDispatchToProps) : mapDispatchToProps || defaultMapDispatchToProps;
+	  var finalMapDispatchToProps = (0, _isPlainObject2.default)(mapDispatchToProps) ? (0, _wrapActionCreators2.default)(mapDispatchToProps) : mapDispatchToProps || defaultMapDispatchToProps;
 	  var finalMergeProps = mergeProps || defaultMergeProps;
 	  var doStatePropsDependOnOwnProps = finalMapStateToProps.length !== 1;
 	  var doDispatchPropsDependOnOwnProps = finalMapDispatchToProps.length !== 1;
@@ -24791,7 +24814,7 @@ var Example = Example || {}; Example["common"] =
 	    var state = store.getState();
 	    var stateProps = doStatePropsDependOnOwnProps ? finalMapStateToProps(state, props) : finalMapStateToProps(state);
 	
-	    invariant(isPlainObject(stateProps), '`mapStateToProps` must return an object. Instead received %s.', stateProps);
+	    (0, _invariant2.default)((0, _isPlainObject2.default)(stateProps), '`mapStateToProps` must return an object. Instead received %s.', stateProps);
 	    return stateProps;
 	  }
 	
@@ -24800,13 +24823,13 @@ var Example = Example || {}; Example["common"] =
 	
 	    var dispatchProps = doDispatchPropsDependOnOwnProps ? finalMapDispatchToProps(dispatch, props) : finalMapDispatchToProps(dispatch);
 	
-	    invariant(isPlainObject(dispatchProps), '`mapDispatchToProps` must return an object. Instead received %s.', dispatchProps);
+	    (0, _invariant2.default)((0, _isPlainObject2.default)(dispatchProps), '`mapDispatchToProps` must return an object. Instead received %s.', dispatchProps);
 	    return dispatchProps;
 	  }
 	
 	  function computeMergedProps(stateProps, dispatchProps, parentProps) {
 	    var mergedProps = finalMergeProps(stateProps, dispatchProps, parentProps);
-	    invariant(isPlainObject(mergedProps), '`mergeProps` must return an object. Instead received %s.', mergedProps);
+	    (0, _invariant2.default)((0, _isPlainObject2.default)(mergedProps), '`mergeProps` must return an object. Instead received %s.', mergedProps);
 	    return mergedProps;
 	  }
 	
@@ -24826,7 +24849,7 @@ var Example = Example || {}; Example["common"] =
 	        _this.version = version;
 	        _this.store = props.store || context.store;
 	
-	        invariant(_this.store, 'Could not find "store" in either the context or ' + ('props of "' + _this.constructor.displayName + '". ') + 'Either wrap the root component in a <Provider>, ' + ('or explicitly pass "store" as a prop to "' + _this.constructor.displayName + '".'));
+	        (0, _invariant2.default)(_this.store, 'Could not find "store" in either the context or ' + ('props of "' + _this.constructor.displayName + '". ') + 'Either wrap the root component in a <Provider>, ' + ('or explicitly pass "store" as a prop to "' + _this.constructor.displayName + '".'));
 	
 	        var storeState = _this.store.getState();
 	        _this.state = { storeState: storeState };
@@ -24836,7 +24859,7 @@ var Example = Example || {}; Example["common"] =
 	
 	      Connect.prototype.updateStatePropsIfNeeded = function updateStatePropsIfNeeded() {
 	        var nextStateProps = computeStateProps(this.store, this.props);
-	        if (this.stateProps && shallowEqual(nextStateProps, this.stateProps)) {
+	        if (this.stateProps && (0, _shallowEqual2.default)(nextStateProps, this.stateProps)) {
 	          return false;
 	        }
 	
@@ -24846,7 +24869,7 @@ var Example = Example || {}; Example["common"] =
 	
 	      Connect.prototype.updateDispatchPropsIfNeeded = function updateDispatchPropsIfNeeded() {
 	        var nextDispatchProps = computeDispatchProps(this.store, this.props);
-	        if (this.dispatchProps && shallowEqual(nextDispatchProps, this.dispatchProps)) {
+	        if (this.dispatchProps && (0, _shallowEqual2.default)(nextDispatchProps, this.dispatchProps)) {
 	          return false;
 	        }
 	
@@ -24881,7 +24904,7 @@ var Example = Example || {}; Example["common"] =
 	      };
 	
 	      Connect.prototype.componentWillReceiveProps = function componentWillReceiveProps(nextProps) {
-	        if (!pure || !shallowEqual(nextProps, this.props)) {
+	        if (!pure || !(0, _shallowEqual2.default)(nextProps, this.props)) {
 	          this.haveOwnPropsChanged = true;
 	        }
 	      };
@@ -24915,7 +24938,7 @@ var Example = Example || {}; Example["common"] =
 	      };
 	
 	      Connect.prototype.getWrappedInstance = function getWrappedInstance() {
-	        invariant(withRef, 'To access the wrapped instance, you need to specify ' + '{ withRef: true } as the fourth argument of the connect() call.');
+	        (0, _invariant2.default)(withRef, 'To access the wrapped instance, you need to specify ' + '{ withRef: true } as the fourth argument of the connect() call.');
 	
 	        return this.refs.wrappedInstance;
 	      };
@@ -24956,26 +24979,26 @@ var Example = Example || {}; Example["common"] =
 	        }
 	
 	        if (withRef) {
-	          this.renderedElement = createElement(WrappedComponent, _extends({}, this.mergedProps, {
+	          this.renderedElement = (0, _react.createElement)(WrappedComponent, _extends({}, this.mergedProps, {
 	            ref: 'wrappedInstance'
 	          }));
 	        } else {
-	          this.renderedElement = createElement(WrappedComponent, this.mergedProps);
+	          this.renderedElement = (0, _react.createElement)(WrappedComponent, this.mergedProps);
 	        }
 	
 	        return this.renderedElement;
 	      };
 	
 	      return Connect;
-	    })(Component);
+	    })(_react.Component);
 	
 	    Connect.displayName = 'Connect(' + getDisplayName(WrappedComponent) + ')';
 	    Connect.WrappedComponent = WrappedComponent;
 	    Connect.contextTypes = {
-	      store: storeShape
+	      store: _storeShape2.default
 	    };
 	    Connect.propTypes = {
-	      store: storeShape
+	      store: _storeShape2.default
 	    };
 	
 	    if (process.env.NODE_ENV !== 'production') {
@@ -24991,11 +25014,9 @@ var Example = Example || {}; Example["common"] =
 	      };
 	    }
 	
-	    return hoistStatics(Connect, WrappedComponent);
+	    return (0, _hoistNonReactStatics2.default)(Connect, WrappedComponent);
 	  };
 	}
-	
-	module.exports = connect;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
 
 /***/ },
@@ -25004,6 +25025,8 @@ var Example = Example || {}; Example["common"] =
 
 	"use strict";
 	
+	exports.__esModule = true;
+	exports.default = shallowEqual;
 	function shallowEqual(objA, objB) {
 	  if (objA === objB) {
 	    return true;
@@ -25026,14 +25049,15 @@ var Example = Example || {}; Example["common"] =
 	
 	  return true;
 	}
-	
-	module.exports = shallowEqual;
 
 /***/ },
 /* 220 */
 /***/ function(module, exports) {
 
 	'use strict';
+	
+	exports.__esModule = true;
+	exports.default = isPlainObject;
 	
 	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 	
@@ -25060,14 +25084,15 @@ var Example = Example || {}; Example["common"] =
 	
 	  return typeof constructor === 'function' && constructor instanceof constructor && fnToString(constructor) === fnToString(Object);
 	}
-	
-	module.exports = isPlainObject;
 
 /***/ },
 /* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+	
+	exports.__esModule = true;
+	exports.default = wrapActionCreators;
 	
 	var _redux = __webpack_require__(206);
 	
@@ -25076,8 +25101,6 @@ var Example = Example || {}; Example["common"] =
 	    return (0, _redux.bindActionCreators)(actionCreators, dispatch);
 	  };
 	}
-	
-	module.exports = wrapActionCreators;
 
 /***/ },
 /* 222 */
@@ -27281,15 +27304,6 @@ var Example = Example || {}; Example["common"] =
 	// behavior in a server scenario
 	var singleInstance = !_CoreManager2['default'].get('IS_NODE');
 	
-	function getServerUrlPath() {
-	  var serverUrl = _CoreManager2['default'].get('SERVER_URL');
-	  if (serverUrl[serverUrl.length - 1] !== '/') {
-	    serverUrl += '/';
-	  }
-	  var url = serverUrl.replace(/https?:\/\//, '');
-	  return url.substr(url.indexOf('/'));
-	}
-	
 	/**
 	 * Creates a new model with defined attributes.
 	 *
@@ -27317,11 +27331,6 @@ var Example = Example || {}; Example["common"] =
 	  function ParseObject(className, attributes, options) {
 	    _classCallCheck(this, ParseObject);
 	
-	    // Enable legacy initializers
-	    if (typeof this.initialize === 'function') {
-	      this.initialize.apply(this, arguments);
-	    }
-	
 	    var toSet = null;
 	    this._objCount = objectCount++;
 	    if (typeof className === 'string') {
@@ -27343,6 +27352,10 @@ var Example = Example || {}; Example["common"] =
 	    }
 	    if (toSet && !this.set(toSet, options)) {
 	      throw new Error('Can\'t create an invalid Parse Object');
+	    }
+	    // Enable legacy initializers
+	    if (typeof this.initialize === 'function') {
+	      this.initialize.apply(this, arguments);
 	    }
 	  }
 	
@@ -27425,15 +27438,9 @@ var Example = Example || {}; Example["common"] =
 	        if (val && typeof val === 'object' && !(val instanceof ParseObject) && !(val instanceof _ParseFile2['default']) && !(val instanceof _ParseRelation2['default'])) {
 	          // Due to the way browsers construct maps, the key order will not change
 	          // unless the object is changed
-	          try {
-	            var json = (0, _encode2['default'])(val, false, true);
-	            var stringified = JSON.stringify(json);
-	            if (objectCache[attr] !== stringified) {
-	              dirty[attr] = val;
-	            }
-	          } catch (e) {
-	            // Error occurred, possibly by a nested unsaved pointer in a mutable container
-	            // No matter how it happened, it indicates a change in the attribute
+	          var json = (0, _encode2['default'])(val, false, true);
+	          var stringified = JSON.stringify(json);
+	          if (objectCache[attr] !== stringified) {
 	            dirty[attr] = val;
 	          }
 	        }
@@ -27979,11 +27986,11 @@ var Example = Example || {}; Example["common"] =
 	    key: 'clone',
 	    value: function clone() {
 	      var clone = new this.constructor();
-	      if (!clone.className) {
-	        clone.className = this.className;
-	      }
 	      if (clone.set) {
 	        clone.set(this.attributes);
+	      }
+	      if (!clone.className) {
+	        clone.className = this.className;
 	      }
 	      return clone;
 	    }
@@ -28640,17 +28647,16 @@ var Example = Example || {}; Example["common"] =
 	        parentProto = classMap[adjustedClassName].prototype;
 	      }
 	      var ParseObjectSubclass = function ParseObjectSubclass(attributes, options) {
-	        // Enable legacy initializers
-	        if (typeof this.initialize === 'function') {
-	          this.initialize.apply(this, arguments);
-	        }
-	
 	        this.className = adjustedClassName;
 	        this._objCount = objectCount++;
 	        if (attributes && typeof attributes === 'object') {
 	          if (!this.set(attributes || {}, options)) {
 	            throw new Error('Can\'t create an invalid Parse Object');
 	          }
+	        }
+	        // Enable legacy initializers
+	        if (typeof this.initialize === 'function') {
+	          this.initialize.apply(this, arguments);
 	        }
 	      };
 	      ParseObjectSubclass.className = adjustedClassName;
@@ -28837,7 +28843,7 @@ var Example = Example || {}; Example["common"] =
 	            requests: batch.map(function (obj) {
 	              return {
 	                method: 'DELETE',
-	                path: getServerUrlPath() + 'classes/' + obj.className + '/' + obj._getId(),
+	                path: '/1/classes/' + obj.className + '/' + obj._getId(),
 	                body: {}
 	              };
 	            })
@@ -28947,7 +28953,7 @@ var Example = Example || {}; Example["common"] =
 	            return RESTController.request('POST', 'batch', {
 	              requests: batch.map(function (obj) {
 	                var params = obj._getSaveParams();
-	                params.path = getServerUrlPath() + params.path;
+	                params.path = '/1/' + params.path;
 	                return params;
 	              })
 	            }, options);
@@ -29041,7 +29047,7 @@ var Example = Example || {}; Example["common"] =
 	  IS_NODE: typeof process !== 'undefined' && !!process.versions && !!process.versions.node,
 	  REQUEST_ATTEMPT_LIMIT: 5,
 	  SERVER_URL: 'https://api.parse.com/1',
-	  VERSION: 'js' + '1.6.14',
+	  VERSION: 'js' + '1.6.13',
 	  APPLICATION_ID: null,
 	  JAVASCRIPT_KEY: null,
 	  MASTER_KEY: null,
@@ -33897,7 +33903,7 @@ var Example = Example || {}; Example["common"] =
 	      userData.sessionToken = userData._sessionToken;
 	      delete userData._sessionToken;
 	    }
-	    var current = _ParseObject3['default'].fromJSON(userData);
+	    var current = ParseUser.fromJSON(userData);
 	    currentUserCache = current;
 	    current._synchronizeAllAuthData();
 	    return current;
@@ -33931,7 +33937,7 @@ var Example = Example || {}; Example["common"] =
 	        userData.sessionToken = userData._sessionToken;
 	        delete userData._sessionToken;
 	      }
-	      var current = _ParseObject3['default'].fromJSON(userData);
+	      var current = ParseUser.fromJSON(userData);
 	      currentUserCache = current;
 	      current._synchronizeAllAuthData();
 	      return _ParsePromise2['default'].as(current);
@@ -34374,11 +34380,7 @@ var Example = Example || {}; Example["common"] =
 	  },
 	
 	  setItem: function setItem(path, value) {
-	    try {
-	      localStorage.setItem(path, value);
-	    } catch (e) {
-	      // Quota exceeded, possibly due to Safari Private Browsing mode
-	    }
+	    localStorage.setItem(path, value);
 	  },
 	
 	  removeItem: function removeItem(path) {
@@ -34518,9 +34520,7 @@ var Example = Example || {}; Example["common"] =
 	    } catch (e) {
 	      promise.reject(e);
 	    }
-	    if (response) {
-	      promise.resolve(response);
-	    }
+	    promise.resolve(response);
 	  };
 	  xdr.onerror = xdr.ontimeout = function () {
 	    // Let's fake a real error message.
@@ -34565,11 +34565,9 @@ var Example = Example || {}; Example["common"] =
 	          try {
 	            response = JSON.parse(xhr.responseText);
 	          } catch (e) {
-	            promise.reject(e.toString());
+	            promise.reject(e);
 	          }
-	          if (response) {
-	            promise.resolve(response, xhr.status, xhr);
-	          }
+	          promise.resolve(response, xhr.status, xhr);
 	        } else if (xhr.status >= 500 || xhr.status === 0) {
 	          // retry on 5XX or node-xmlhttprequest error
 	          if (++attempts < _CoreManager2['default'].get('REQUEST_ATTEMPT_LIMIT')) {
