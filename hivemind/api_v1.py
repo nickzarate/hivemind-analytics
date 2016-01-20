@@ -17,7 +17,7 @@ def api_echo():
     )
 
 @app.route(root + '/get_phi', methods=['GET','PUT','POST']) # SKETCHY AF
-@crossdomain(origin='*', methods=['GET','PUT','POST'], headers=['Content-Type']) # TODO find out how this breaks with max_age
+@crossdomain(origin='*', methods=['GET','PUT','POST','DELETE'], headers=['Content-Type']) # TODO find out how this breaks with max_age
 def get_phi():
   payload = request.get_json()
   print payload
