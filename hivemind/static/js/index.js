@@ -1665,8 +1665,8 @@ webpackJsonpExample__name_([1],[
 	    }
 	
 	    $.ajax({
-	      url: ("http://localhost:5000") + '/api/v1/get_phi',
-	      method: 'GET',
+	      url: ("https://hivemind-analytics.heroku.com") + '/api/v1/get_phi',
+	      method: 'POST',
 	      data: JSON.stringify({
 	        covariates: covariates,
 	        p: predictions
@@ -30043,7 +30043,7 @@ webpackJsonpExample__name_([1],[
 	
 	function handleEchoRequest() {
 	  return function (dispatch) {
-	    $.get(("http://localhost:5000") + '/api/v1/echo', function (response) {
+	    $.get(("https://hivemind-analytics.heroku.com") + '/api/v1/echo', function (response) {
 	      console.log(response);
 	      dispatch(echo(response));
 	    });
