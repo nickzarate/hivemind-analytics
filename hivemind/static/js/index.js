@@ -1663,11 +1663,10 @@ webpackJsonpExample__name_([1],[
 	    } else {
 	      return;
 	    }
-	    console.log(predictions);
-	    console.log(round.covariates);
+	
 	    $.ajax({
 	      url: ("https://hivemind-analytics.heroku.com") + '/api/v1/get_phi',
-	      method: 'POST',
+	      method: 'GET',
 	      data: JSON.stringify({
 	        covariates: covariates,
 	        p: predictions
