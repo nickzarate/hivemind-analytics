@@ -607,6 +607,7 @@ webpackJsonpExample__name_([1],[
 	var SET_PHI = exports.SET_PHI = 'SET_PHI';
 	var SET_POINT_ESTIMATE = exports.SET_POINT_ESTIMATE = 'SET_POINT_ESTIMATE';
 	var SET_ROUND = exports.SET_ROUND = 'SET_ROUND';
+	var SET_SERIES = exports.SET_SERIES = 'SET_SERIES';
 	var SET_USER_EMAIL = exports.SET_USER_EMAIL = 'SET_USER_EMAIL';
 	var SET_USER_PASSWORD = exports.SET_USER_PASSWORD = 'SET_USER_PASSWORD';
 	var WITHDRAW = exports.WITHDRAW = 'WITHDRAW';
