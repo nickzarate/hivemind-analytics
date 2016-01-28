@@ -11315,8 +11315,8 @@ webpackJsonpExample__name_([1],[
 	    key: 'componentWillMount',
 	    value: function componentWillMount() {
 	      var actions = this.props.actions;
-	      //actions.asyncGetPhi()
 	
+	      actions.asyncGetPhi();
 	      actions.getCovariateData();
 	      actions.getData();
 	    }
