@@ -4764,6 +4764,7 @@ webpackJsonpExample__name_([1],{
 	}
 	
 	function addPhi(phi) {
+	  console.log(phi);
 	  return {
 	    type: _constants.ADD_PHI,
 	    payload: {
