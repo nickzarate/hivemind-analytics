@@ -486,7 +486,7 @@ webpackJsonpExample__name_([1],{
 	
 	var _Routes2 = _interopRequireDefault(_Routes);
 	
-	var _configureStore = __webpack_require__(693);
+	var _configureStore = __webpack_require__(694);
 	
 	var _configureStore2 = _interopRequireDefault(_configureStore);
 	
@@ -530,23 +530,23 @@ webpackJsonpExample__name_([1],{
 	
 	var _Home2 = _interopRequireDefault(_Home);
 	
-	var _Round = __webpack_require__(664);
+	var _Round = __webpack_require__(665);
 	
 	var _Round2 = _interopRequireDefault(_Round);
 	
-	var _Question = __webpack_require__(667);
+	var _Question = __webpack_require__(668);
 	
 	var _Question2 = _interopRequireDefault(_Question);
 	
-	var _Stats = __webpack_require__(674);
+	var _Stats = __webpack_require__(675);
 	
 	var _Stats2 = _interopRequireDefault(_Stats);
 	
-	var _Survey = __webpack_require__(685);
+	var _Survey = __webpack_require__(686);
 	
 	var _Survey2 = _interopRequireDefault(_Survey);
 	
-	var _NotFound = __webpack_require__(692);
+	var _NotFound = __webpack_require__(693);
 	
 	var _NotFound2 = _interopRequireDefault(_NotFound);
 	
@@ -763,8 +763,10 @@ webpackJsonpExample__name_([1],{
 	var ADD_ANSWERS = exports.ADD_ANSWERS = 'ADD_ANSWERS';
 	var ADD_OUTCOMES = exports.ADD_OUTCOMES = 'ADD_OUTCOMES';
 	var ADD_PHI = exports.ADD_PHI = 'ADD_PHI';
+	var ADD_WINNINGS = exports.ADD_WINNINGS = 'ADD_WINNINGS';
 	var CLEAR_ERRORS = exports.CLEAR_ERRORS = 'CLEAR_ERRORS';
 	var CLEAR_VALUES = exports.CLEAR_VALUES = 'CLEAR_VALUES';
+	var CLEAR_WINNINGS = exports.CLEAR_WINNINGS = 'CLEAR_WINNINGS';
 	var DEPOSIT = exports.DEPOSIT = 'DEPOSIT';
 	var ERROR = exports.ERROR = 'ERROR';
 	var INCREMENT_CURRENT_QUESTION = exports.INCREMENT_CURRENT_QUESTION = 'INCREMENT_CURRENT_QUESTION';
@@ -776,6 +778,7 @@ webpackJsonpExample__name_([1],{
 	var SET_BANK = exports.SET_BANK = 'SET_BANK';
 	var SET_BIN_VALUES = exports.SET_BIN_VALUES = 'SET_BIN_VALUES';
 	var SET_CATEGORIES = exports.SET_CATEGORIES = 'SET_CATEGORIES';
+	var SET_CORRECT_ANSWER_INDICES = exports.SET_CORRECT_ANSWER_INDICES = 'SET_CORRECT_ANSWER_INDICES';
 	var SET_COVARIATE_DATA = exports.SET_COVARIATE_DATA = 'SET_COVARIATE_DATA';
 	var SET_CURRENT_CATEGORY = exports.SET_CURRENT_CATEGORY = 'SET_CURRENT_CATEGORY';
 	var SET_CURRENT_QUESTION = exports.SET_CURRENT_QUESTION = 'SET_CURRENT_QUESTION';
@@ -795,6 +798,7 @@ webpackJsonpExample__name_([1],{
 	var SET_UNLOCKED = exports.SET_UNLOCKED = 'SET_UNLOCKED';
 	var SET_VALUE = exports.SET_VALUE = 'SET_VALUE';
 	var SET_VALUES = exports.SET_VALUES = 'SET_VALUES';
+	var SET_WORTH = exports.SET_WORTH = 'SET_WORTH';
 	var SHOW_MODAL = exports.SHOW_MODAL = 'SHOW_MODAL';
 	var WITHDRAW = exports.WITHDRAW = 'WITHDRAW';
 
@@ -1955,7 +1959,7 @@ webpackJsonpExample__name_([1],{
 	
 	var _RangeModal2 = _interopRequireDefault(_RangeModal);
 	
-	var _LogoutButton = __webpack_require__(663);
+	var _LogoutButton = __webpack_require__(664);
 	
 	var _LogoutButton2 = _interopRequireDefault(_LogoutButton);
 	
@@ -2654,7 +2658,7 @@ webpackJsonpExample__name_([1],{
 	
 	var _RangePreview2 = _interopRequireDefault(_RangePreview);
 	
-	var _CategorySurvey = __webpack_require__(660);
+	var _CategorySurvey = __webpack_require__(661);
 	
 	var _CategorySurvey2 = _interopRequireDefault(_CategorySurvey);
 	
@@ -2832,6 +2836,9 @@ webpackJsonpExample__name_([1],{
 	exports.incrementCurrentQuestion = incrementCurrentQuestion;
 	exports.resetCurrentQuestion = resetCurrentQuestion;
 	exports.setCurrentQuestion = setCurrentQuestion;
+	exports.setWorth = setWorth;
+	exports.setCorrectAnswerIndices = setCorrectAnswerIndices;
+	exports.addWinnings = addWinnings;
 	exports.pullQuestion = pullQuestion;
 	exports.initializeQuestion = initializeQuestion;
 	exports.asyncCreateRound = asyncCreateRound;
@@ -2899,6 +2906,33 @@ webpackJsonpExample__name_([1],{
 	    type: _constants.SET_CURRENT_QUESTION,
 	    payload: {
 	      currentQuestion: question
+	    }
+	  };
+	}
+	
+	function setWorth(worth) {
+	  return {
+	    type: _constants.SET_WORTH,
+	    payload: {
+	      worth: worth
+	    }
+	  };
+	}
+	
+	function setCorrectAnswerIndices(correctAnswerIndices) {
+	  return {
+	    type: _constants.SET_CORRECT_ANSWER_INDICES,
+	    payload: {
+	      correctAnswerIndices: correctAnswerIndices
+	    }
+	  };
+	}
+	
+	function addWinnings(winnings) {
+	  return {
+	    type: _constants.ADD_WINNINGS,
+	    payload: {
+	      winnings: winnings
 	    }
 	  };
 	}
@@ -2987,14 +3021,18 @@ webpackJsonpExample__name_([1],{
 	    var _getState = getState();
 	
 	    var question = _getState.question;
-	
+	    var round = _getState.round;
 	    //TODO: Calculate how many points are earned for answering correctly
 	
-	    var points = question.binValues[question.currentQuestion.get('correctAnswerIndex')] * 50;
+	    var winnings = 0;
+	    for (var i = 0; i < round.worth.length; i++) {
+	      winnings += round.correctAnswerIndices[i] === -1 ? 0 : question.binValues[i][round.correctAnswerIndices[i]] * round.worth[i];
+	    }
 	    var currentUser = Parse.User.current();
-	    var honey = currentUser.get('honey');
-	    honey += points;
-	    currentUser.save({ honey: honey });
+	    var points = currentUser.get('points');
+	    points += winnings;
+	    dispatch(addWinnings(winnings));
+	    currentUser.save({ points: points });
 	  };
 	}
 	
@@ -3293,11 +3331,13 @@ webpackJsonpExample__name_([1],{
 	
 	var _question = __webpack_require__(652);
 	
+	var _round = __webpack_require__(651);
+	
 	var _bins = __webpack_require__(657);
 	
 	var _bins2 = _interopRequireDefault(_bins);
 	
-	var _Bins = __webpack_require__(659);
+	var _Bins = __webpack_require__(660);
 	
 	var _Bins2 = _interopRequireDefault(_Bins);
 	
@@ -3333,6 +3373,16 @@ webpackJsonpExample__name_([1],{
 	  }
 	
 	  _createClass(BinsContainer, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.props.actions.setWorth(this.props.worth);
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      this.props.actions.setCorrectAnswerIndices(nextProps.correctAnswerIndices);
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
@@ -3360,7 +3410,7 @@ webpackJsonpExample__name_([1],{
 	};
 	exports.default = (0, _reduxify2.default)({
 	  selector: _bins2.default,
-	  actions: { handleDeposit: _question.handleDeposit },
+	  actions: { handleDeposit: _question.handleDeposit, setWorth: _round.setWorth, setCorrectAnswerIndices: _round.setCorrectAnswerIndices },
 	  container: BinsContainer
 	});
 
@@ -3380,6 +3430,10 @@ webpackJsonpExample__name_([1],{
 	var _points = __webpack_require__(658);
 	
 	var _points2 = _interopRequireDefault(_points);
+	
+	var _correctAnswerIndices = __webpack_require__(659);
+	
+	var _correctAnswerIndices2 = _interopRequireDefault(_correctAnswerIndices);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -3473,12 +3527,13 @@ webpackJsonpExample__name_([1],{
 	  return bins.length ? bins : [[]];
 	}
 	
-	exports.default = (0, _reselect.createSelector)(categorySelector, binValuesSelector, bankSelector, rangesSelector, _points2.default, function (currentCategory, binValues, bank, ranges, worth) {
+	exports.default = (0, _reselect.createSelector)(categorySelector, binValuesSelector, bankSelector, rangesSelector, _points2.default, _correctAnswerIndices2.default, function (currentCategory, binValues, bank, ranges, worth, correctAnswerIndices) {
 	  return {
 	    bank: bank.length > 0 ? bank : [[]],
 	    binTexts: currentCategory ? getBinTexts(currentCategory, ranges) : [[]],
 	    binValues: binValues.length > 0 ? binValues : [[]],
-	    worth: worth.worth
+	    worth: worth.worth,
+	    correctAnswerIndices: correctAnswerIndices.correctAnswerIndices
 	  };
 	});
 
@@ -3550,6 +3605,108 @@ webpackJsonpExample__name_([1],{
 /***/ },
 
 /***/ 659:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _reselect = __webpack_require__(533);
+	
+	var categorySelector = function categorySelector(state) {
+	  return state.round.currentCategory;
+	};
+	var rangesSelector = function rangesSelector(state) {
+	  return state.round.ranges;
+	};
+	var outcomesSelector = function outcomesSelector(state) {
+	  return state.question.currentQuestion;
+	};
+	
+	function getContinuousAnswerIndex(numBins, range, outcome) {
+	  var binValues = [];
+	  var difference = range[1] - range[0];
+	  //If correct answer index is not within the specified range, return -1
+	  if (outcome < range[0] || outcome > range[1]) {
+	    return -1;
+	  }
+	  //Find the correct answer index within the given range
+	  var step = difference / numBins;
+	  step = Math.floor(step + 0.5);
+	  binValues.push(Math.floor(range[0] + 0.5));
+	  for (var i = 0; i < numBins; i++) {
+	    var lastValue = binValues[binValues.length - 1];
+	    var nextValue = lastValue + step;
+	    if (outcome >= lastValue && outcome <= nextValue) {
+	      return i;
+	    }
+	    binValues.push(nextValue);
+	  }
+	}
+	
+	function getCorrectAnswerIndices(currentCategory, ranges, currentQuestion) {
+	  var numDiscrete = 0;
+	  var _iteratorNormalCompletion = true;
+	  var _didIteratorError = false;
+	  var _iteratorError = undefined;
+	
+	  try {
+	    for (var _iterator = currentCategory.get('discrete')[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	      var discrete = _step.value;
+	
+	      numDiscrete += discrete ? 0 : 1;
+	      if (!discrete && ranges.length === 0) {
+	        return [[]];
+	      }
+	      if (ranges.length < numDiscrete) {
+	        return [[]];
+	      }
+	    }
+	  } catch (err) {
+	    _didIteratorError = true;
+	    _iteratorError = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion && _iterator.return) {
+	        _iterator.return();
+	      }
+	    } finally {
+	      if (_didIteratorError) {
+	        throw _iteratorError;
+	      }
+	    }
+	  }
+	
+	  var correctAnswerIndices = [];
+	  var newRanges = ranges.slice(0);
+	  for (var i = 0; i < currentCategory.get('outcomeRanges').length; i++) {
+	    if (currentCategory.get('discrete')[i]) {
+	      correctAnswerIndices.push(currentQuestion.get('outcomes')[i] - currentCategory.get('outcomeRanges')[i][0]);
+	    } else {
+	      //SKETCHY
+	      var index = 0;
+	      for (var j = 0; j < i; j++) {
+	        index += currentCategory.get('discrete')[j] ? 0 : 1;
+	      }
+	      newRanges[index][0] = Number(newRanges[index][0]);
+	      newRanges[index][1] = Number(newRanges[index][1]);
+	      correctAnswerIndices.push(getContinuousAnswerIndex(currentCategory.get('numBins')[i], newRanges[index], currentQuestion.get('outcomes')[index]));
+	    }
+	  }
+	  return correctAnswerIndices.length ? correctAnswerIndices : [];
+	}
+	
+	exports.default = (0, _reselect.createSelector)(categorySelector, rangesSelector, outcomesSelector, function (currentCategory, ranges, currentQuestion) {
+	  return {
+	    correctAnswerIndices: currentCategory && currentQuestion ? getCorrectAnswerIndices(currentCategory, ranges, currentQuestion) : []
+	  };
+	});
+
+/***/ },
+
+/***/ 660:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3651,7 +3808,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 660:
+/***/ 661:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3666,11 +3823,11 @@ webpackJsonpExample__name_([1],{
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _categorySurvey = __webpack_require__(661);
+	var _categorySurvey = __webpack_require__(662);
 	
 	var _categorySurvey2 = _interopRequireDefault(_categorySurvey);
 	
-	var _CategorySurvey = __webpack_require__(662);
+	var _CategorySurvey = __webpack_require__(663);
 	
 	var _CategorySurvey2 = _interopRequireDefault(_CategorySurvey);
 	
@@ -3715,7 +3872,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 661:
+/***/ 662:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3739,7 +3896,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 662:
+/***/ 663:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3797,7 +3954,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 663:
+/***/ 664:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3876,7 +4033,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 664:
+/***/ 665:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3891,7 +4048,7 @@ webpackJsonpExample__name_([1],{
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Round = __webpack_require__(665);
+	var _Round = __webpack_require__(666);
 	
 	var _Round2 = _interopRequireDefault(_Round);
 	
@@ -3934,7 +4091,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 665:
+/***/ 666:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -3953,7 +4110,7 @@ webpackJsonpExample__name_([1],{
 	
 	var _parse2 = _interopRequireDefault(_parse);
 	
-	var _round = __webpack_require__(666);
+	var _round = __webpack_require__(667);
 	
 	var _round2 = _interopRequireDefault(_round);
 	
@@ -4044,7 +4201,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 666:
+/***/ 667:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4069,7 +4226,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 667:
+/***/ 668:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4084,11 +4241,11 @@ webpackJsonpExample__name_([1],{
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Instructions = __webpack_require__(668);
+	var _Instructions = __webpack_require__(669);
 	
 	var _Instructions2 = _interopRequireDefault(_Instructions);
 	
-	var _QuestionBody = __webpack_require__(671);
+	var _QuestionBody = __webpack_require__(672);
 	
 	var _QuestionBody2 = _interopRequireDefault(_QuestionBody);
 	
@@ -4130,7 +4287,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 668:
+/***/ 669:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4145,11 +4302,11 @@ webpackJsonpExample__name_([1],{
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _instructions = __webpack_require__(669);
+	var _instructions = __webpack_require__(670);
 	
 	var _instructions2 = _interopRequireDefault(_instructions);
 	
-	var _Instructions = __webpack_require__(670);
+	var _Instructions = __webpack_require__(671);
 	
 	var _Instructions2 = _interopRequireDefault(_Instructions);
 	
@@ -4195,7 +4352,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 669:
+/***/ 670:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4223,7 +4380,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 670:
+/***/ 671:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4301,7 +4458,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 671:
+/***/ 672:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4316,11 +4473,11 @@ webpackJsonpExample__name_([1],{
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _estimates = __webpack_require__(672);
+	var _estimates = __webpack_require__(673);
 	
 	var _estimates2 = _interopRequireDefault(_estimates);
 	
-	var _QuestionBody = __webpack_require__(673);
+	var _QuestionBody = __webpack_require__(674);
 	
 	var _QuestionBody2 = _interopRequireDefault(_QuestionBody);
 	
@@ -4365,7 +4522,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 672:
+/***/ 673:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4390,7 +4547,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 673:
+/***/ 674:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4468,7 +4625,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 674:
+/***/ 675:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4483,11 +4640,11 @@ webpackJsonpExample__name_([1],{
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _LineCharts = __webpack_require__(675);
+	var _LineCharts = __webpack_require__(676);
 	
 	var _LineCharts2 = _interopRequireDefault(_LineCharts);
 	
-	var _HomeButton = __webpack_require__(684);
+	var _HomeButton = __webpack_require__(685);
 	
 	var _HomeButton2 = _interopRequireDefault(_HomeButton);
 	
@@ -4516,11 +4673,6 @@ webpackJsonpExample__name_([1],{
 	      return _react2.default.createElement(
 	        'div',
 	        null,
-	        _react2.default.createElement(
-	          'h1',
-	          null,
-	          'Stats Page'
-	        ),
 	        _react2.default.createElement(_LineCharts2.default, null),
 	        _react2.default.createElement(_HomeButton2.default, null)
 	      );
@@ -4534,7 +4686,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 675:
+/***/ 676:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4555,13 +4707,13 @@ webpackJsonpExample__name_([1],{
 	
 	var _KEYCHAIN = __webpack_require__(629);
 	
-	var _lineCharts = __webpack_require__(676);
+	var _lineCharts = __webpack_require__(677);
 	
 	var _lineCharts2 = _interopRequireDefault(_lineCharts);
 	
-	var _stats = __webpack_require__(677);
+	var _stats = __webpack_require__(678);
 	
-	var _LineCharts = __webpack_require__(678);
+	var _LineCharts = __webpack_require__(679);
 	
 	var _LineCharts2 = _interopRequireDefault(_LineCharts);
 	
@@ -4602,6 +4754,11 @@ webpackJsonpExample__name_([1],{
 	      this.props.actions.getData();
 	    }
 	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      this.props.actions.clearWinnings();
+	    }
+	  }, {
 	    key: 'handleSliderChange',
 	    value: function handleSliderChange(chartIndex, sliderIndex) {
 	      var _this2 = this;
@@ -4630,7 +4787,8 @@ webpackJsonpExample__name_([1],{
 	        onClick: this.handleClick,
 	        outcomeNames: this.props.outcomeNames,
 	        outcomeIndex: this.props.outcomeIndex,
-	        covariateData: this.props.covariateData
+	        covariateData: this.props.covariateData,
+	        winnings: this.props.winnings
 	      });
 	    }
 	  }]);
@@ -4641,13 +4799,13 @@ webpackJsonpExample__name_([1],{
 	exports.default = (0, _reduxify2.default)({
 	  selector: _lineCharts2.default,
 	  actions: { asyncGetPhis: _stats.asyncGetPhis, getData: _stats.getData, getCovariateData: _stats.getCovariateData,
-	    updateCovariateData: _stats.updateCovariateData, setOutcomeIndex: _stats.setOutcomeIndex },
+	    updateCovariateData: _stats.updateCovariateData, setOutcomeIndex: _stats.setOutcomeIndex, clearWinnings: _stats.clearWinnings },
 	  container: LineChartsContainer
 	});
 
 /***/ },
 
-/***/ 676:
+/***/ 677:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -4670,12 +4828,16 @@ webpackJsonpExample__name_([1],{
 	var covariateDataSelector = function covariateDataSelector(state) {
 	  return state.stats.covariateData;
 	};
+	var winningsSelector = function winningsSelector(state) {
+	  return state.round.winnings;
+	};
 	
-	exports.default = (0, _reselect.createSelector)(categorySelector, dataSelector, indexSelector, covariateDataSelector, function (currentCategory, data, outcomeIndex, covariateData) {
+	exports.default = (0, _reselect.createSelector)(categorySelector, dataSelector, indexSelector, covariateDataSelector, winningsSelector, function (currentCategory, data, outcomeIndex, covariateData, winnings) {
 	  return {
 	    data: data,
 	    outcomeIndex: outcomeIndex,
 	    covariateData: covariateData,
+	    winnings: winnings,
 	    covariateRanges: currentCategory ? currentCategory.get('covariateRanges') : [],
 	    outcomeRanges: currentCategory ? currentCategory.get('outcomeRanges') : [],
 	    outcomeNames: currentCategory ? currentCategory.get('outcomeNames') : []
@@ -4684,7 +4846,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 677:
+/***/ 678:
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
@@ -4693,6 +4855,7 @@ webpackJsonpExample__name_([1],{
 	  value: true
 	});
 	exports.setData = setData;
+	exports.clearWinnings = clearWinnings;
 	exports.setCovariateData = setCovariateData;
 	exports.setPhi = setPhi;
 	exports.setSeries = setSeries;
@@ -4714,6 +4877,12 @@ webpackJsonpExample__name_([1],{
 	    payload: {
 	      data: data
 	    }
+	  };
+	}
+	
+	function clearWinnings() {
+	  return {
+	    type: _constants.CLEAR_WINNINGS
 	  };
 	}
 	
@@ -5013,7 +5182,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 678:
+/***/ 679:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5032,9 +5201,9 @@ webpackJsonpExample__name_([1],{
 	
 	var _reactChartist2 = _interopRequireDefault(_reactChartist);
 	
-	__webpack_require__(679);
+	__webpack_require__(680);
 	
-	var _Sliders = __webpack_require__(681);
+	var _Sliders = __webpack_require__(682);
 	
 	var _Sliders2 = _interopRequireDefault(_Sliders);
 	
@@ -5108,6 +5277,12 @@ webpackJsonpExample__name_([1],{
 	      return _react2.default.createElement(
 	        'div',
 	        null,
+	        _react2.default.createElement(
+	          'h1',
+	          null,
+	          'Points Earned: ',
+	          this.props.winnings
+	        ),
 	        this.renderButtons(),
 	        _react2.default.createElement(
 	          'ul',
@@ -5125,13 +5300,13 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 679:
+/***/ 680:
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(680);
+	var content = __webpack_require__(681);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(619)(content, {});
@@ -5152,7 +5327,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 680:
+/***/ 681:
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(613)();
@@ -5167,7 +5342,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 681:
+/***/ 682:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5182,7 +5357,7 @@ webpackJsonpExample__name_([1],{
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	__webpack_require__(682);
+	__webpack_require__(683);
 	
 	var _rcSlider = __webpack_require__(4);
 	
@@ -5247,13 +5422,13 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 682:
+/***/ 683:
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(683);
+	var content = __webpack_require__(684);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
 	var update = __webpack_require__(619)(content, {});
@@ -5274,7 +5449,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 683:
+/***/ 684:
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(613)();
@@ -5289,7 +5464,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 684:
+/***/ 685:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5356,7 +5531,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 685:
+/***/ 686:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5371,7 +5546,7 @@ webpackJsonpExample__name_([1],{
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Survey = __webpack_require__(686);
+	var _Survey = __webpack_require__(687);
 	
 	var _Survey2 = _interopRequireDefault(_Survey);
 	
@@ -5412,7 +5587,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 686:
+/***/ 687:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5427,15 +5602,15 @@ webpackJsonpExample__name_([1],{
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _survey = __webpack_require__(687);
+	var _survey = __webpack_require__(688);
 	
 	var _survey2 = _interopRequireDefault(_survey);
 	
-	var _survey3 = __webpack_require__(688);
+	var _survey3 = __webpack_require__(689);
 	
 	var surveyActions = _interopRequireWildcard(_survey3);
 	
-	var _Survey = __webpack_require__(689);
+	var _Survey = __webpack_require__(690);
 	
 	var _Survey2 = _interopRequireDefault(_Survey);
 	
@@ -5484,7 +5659,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 687:
+/***/ 688:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5507,7 +5682,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 688:
+/***/ 689:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5593,7 +5768,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 689:
+/***/ 690:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5614,11 +5789,11 @@ webpackJsonpExample__name_([1],{
 	
 	var _KEYCHAIN = __webpack_require__(629);
 	
-	var _survey = __webpack_require__(690);
+	var _survey = __webpack_require__(691);
 	
 	var _survey2 = _interopRequireDefault(_survey);
 	
-	var _Selector = __webpack_require__(691);
+	var _Selector = __webpack_require__(692);
 	
 	var _Selector2 = _interopRequireDefault(_Selector);
 	
@@ -5768,7 +5943,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 690:
+/***/ 691:
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -5815,7 +5990,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 691:
+/***/ 692:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5886,7 +6061,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 692:
+/***/ 693:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5940,17 +6115,17 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 693:
+/***/ 694:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	/* <process.env.NODE_ENV> from Webpack's DefinePlugin */
-	if (true) module.exports = __webpack_require__(694);else module.exports = require('./configureStore.dev');
+	if (true) module.exports = __webpack_require__(695);else module.exports = require('./configureStore.dev');
 
 /***/ },
 
-/***/ 694:
+/***/ 695:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5968,7 +6143,7 @@ webpackJsonpExample__name_([1],{
 	
 	var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 	
-	var _reducers = __webpack_require__(695);
+	var _reducers = __webpack_require__(696);
 	
 	var _reducers2 = _interopRequireDefault(_reducers);
 	
@@ -5988,7 +6163,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 695:
+/***/ 696:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -5999,31 +6174,31 @@ webpackJsonpExample__name_([1],{
 	
 	var _redux = __webpack_require__(521);
 	
-	var _user = __webpack_require__(696);
+	var _user = __webpack_require__(697);
 	
 	var _user2 = _interopRequireDefault(_user);
 	
-	var _question = __webpack_require__(697);
+	var _question = __webpack_require__(698);
 	
 	var _question2 = _interopRequireDefault(_question);
 	
-	var _round = __webpack_require__(698);
+	var _round = __webpack_require__(699);
 	
 	var _round2 = _interopRequireDefault(_round);
 	
-	var _survey = __webpack_require__(699);
+	var _survey = __webpack_require__(700);
 	
 	var _survey2 = _interopRequireDefault(_survey);
 	
-	var _stats = __webpack_require__(700);
+	var _stats = __webpack_require__(701);
 	
 	var _stats2 = _interopRequireDefault(_stats);
 	
-	var _form = __webpack_require__(701);
+	var _form = __webpack_require__(702);
 	
 	var _form2 = _interopRequireDefault(_form);
 	
-	var _modal = __webpack_require__(702);
+	var _modal = __webpack_require__(703);
 	
 	var _modal2 = _interopRequireDefault(_modal);
 	
@@ -6048,7 +6223,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 696:
+/***/ 697:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6084,7 +6259,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 697:
+/***/ 698:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6136,7 +6311,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 698:
+/***/ 699:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6164,7 +6339,10 @@ webpackJsonpExample__name_([1],{
 	  currentRound: null,
 	  categories: null,
 	  ranges: [],
-	  unlocked: []
+	  unlocked: [],
+	  worth: [],
+	  correctAnswerIndices: [],
+	  winnings: 0
 	};
 	
 	function round() {
@@ -6196,6 +6374,14 @@ webpackJsonpExample__name_([1],{
 	      return (0, _reactAddonsUpdate2.default)(state, { ranges: { $set: action.payload.ranges } });
 	    case _constants.SET_UNLOCKED:
 	      return (0, _reactAddonsUpdate2.default)(state, { unlocked: _defineProperty({}, action.payload.index, { $set: action.payload.unlocked }) });
+	    case _constants.SET_WORTH:
+	      return (0, _reactAddonsUpdate2.default)(state, { worth: { $set: action.payload.worth } });
+	    case _constants.SET_CORRECT_ANSWER_INDICES:
+	      return (0, _reactAddonsUpdate2.default)(state, { correctAnswerIndices: { $set: action.payload.correctAnswerIndices } });
+	    case _constants.ADD_WINNINGS:
+	      return (0, _reactAddonsUpdate2.default)(state, { winnings: { $set: state.winnings + action.payload.winnings } });
+	    case _constants.CLEAR_WINNINGS:
+	      return (0, _reactAddonsUpdate2.default)(state, { winnings: { $set: 0 } });
 	    default:
 	      return state;
 	  }
@@ -6203,7 +6389,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 699:
+/***/ 700:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6242,7 +6428,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 700:
+/***/ 701:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6294,7 +6480,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 701:
+/***/ 702:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -6345,7 +6531,7 @@ webpackJsonpExample__name_([1],{
 
 /***/ },
 
-/***/ 702:
+/***/ 703:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
