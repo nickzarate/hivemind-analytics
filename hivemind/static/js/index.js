@@ -762,6 +762,7 @@ webpackJsonpExample__name_([1],{
 	var ADD_ANSWER_TO_ROUND = exports.ADD_ANSWER_TO_ROUND = 'ADD_ANSWER_TO_ROUND';
 	var ADD_ANSWERS = exports.ADD_ANSWERS = 'ADD_ANSWERS';
 	var ADD_OUTCOMES = exports.ADD_OUTCOMES = 'ADD_OUTCOMES';
+	var ADD_PHI = exports.ADD_PHI = 'ADD_PHI';
 	var CLEAR_ERRORS = exports.CLEAR_ERRORS = 'CLEAR_ERRORS';
 	var CLEAR_VALUES = exports.CLEAR_VALUES = 'CLEAR_VALUES';
 	var DEPOSIT = exports.DEPOSIT = 'DEPOSIT';
