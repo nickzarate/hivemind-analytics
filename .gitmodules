@@ -1,0 +1,4 @@
+[submodule "client"]
+	path = hivemind/calendar-web
+	url = https://github.com/ADI-Labs/calendar-web.git
+	branch = production
