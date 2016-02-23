@@ -1,0 +1,4 @@
+[submodule "client"]
+	path = hivemind/client
+	url = https://github.com/nickzarate/hivemind-web.git
+	branch = production
