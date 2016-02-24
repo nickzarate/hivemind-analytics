@@ -6,17 +6,17 @@ from os.path import abspath, join, dirname
 @app.route('/')
 def landing():
   base = abspath(join(dirname(__file__), pardir))
-  assets = join(base, 'hivemind/client')
+  assets = join(base, 'hivemind/static')
   return send_from_directory(assets, 'index.html')
 
 @app.route('/js/<path:path>')
 def send_js(path):
   base = abspath(join(dirname(__file__), pardir))
-  assets = join(base, 'hivemind/client/js')
+  assets = join(base, 'hivemind/static/js')
   return send_from_directory(assets, path)
 
 @app.route('/css/<path:path>')
 def send_css(path):
   base = abspath(join(dirname(__file__), pardir))
-  assets = join(base, 'hivemind/client/css')
+  assets = join(base, 'hivemind/static/css')
   return send_from_directory(assets, path)
