@@ -1,10 +1,11 @@
-from flask import render_template, send_from_directory
+from flask import render_template, send_from_directory, redirect, request, url_for
 from hivemind import app
 from os import path, pardir
 from os.path import abspath, join, dirname
 
-@app.route('/')
-def landing():
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def landing(path):
   base = abspath(join(dirname(__file__), pardir))
   assets = join(base, 'hivemind/static')
   return send_from_directory(assets, 'index.html')
