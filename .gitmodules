@@ -1,4 +1,0 @@
-[submodule "static"]
-	path = hivemind/static
-	url = https://github.com/nickzarate/hivemind-web.git
-	branch = build
