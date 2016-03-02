@@ -5,16 +5,14 @@ from hivemind import app
 from crossdomain import crossdomain
 from algorithms import phi_ols_estimator
 
-
 root = '/api/v1'
-
 
 @app.route(root + '/echo', methods=['GET'])
 @crossdomain(origin='*')
 def api_echo():
-    return jsonify(
-        payload = 'hi'
-    )
+  return jsonify(
+    payload = 'hi'
+  )
 
 @app.route(root + '/get_phi', methods=['GET','PUT','POST']) # SKETCHY AF
 @crossdomain(origin='*', methods=['GET','PUT','POST','DELETE'], headers=['Content-Type']) # TODO find out how this breaks with max_age
@@ -25,5 +23,5 @@ def get_phi():
   p = payload[u'p']
   phi = phi_ols_estimator(covariates, p)
   return jsonify(
-      phi = phi.tolist()
+    phi = phi.tolist()
   )
