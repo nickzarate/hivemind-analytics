@@ -16,8 +16,8 @@ def send_js(path):
   assets = join(base, 'hivemind/static/js')
   return send_from_directory(assets, path)
 
-@app.route('/css/<path:path>')
-def send_css(path):
-  base = abspath(join(dirname(__file__), pardir))
-  assets = join(base, 'hivemind/static/css')
-  return send_from_directory(assets, path)
+# @app.route('/css/<path:path>')
+# def send_css(path):
+#   base = abspath(join(dirname(__file__), pardir))
+#   assets = join(base, 'hivemind/static/css')
+#   return send_from_directory(assets, path)
