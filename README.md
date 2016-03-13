@@ -1,6 +1,6 @@
 # Vagrant
 
-Install [vagrant](https://www.vagrantup.com/)
+Install [vagrant](https://www.vagrantup.com/), then type in the following commands...
 ```
 $ vagrant up
 $ vagrant ssh
