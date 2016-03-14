@@ -1,6 +1,8 @@
-# Vagrant
+# Environment Setup
 
-Install [vagrant](https://www.vagrantup.com/), then type in the following commands...
+Install [vagrant](https://www.vagrantup.com/)
+
+Make sure you have successfully synced the git submodule (See [Deployment](https://github.com/nickzarate/hivemind-analytics#deployment)) and type in the following commands...
 ```
 $ vagrant up
 $ vagrant ssh
@@ -8,7 +10,7 @@ $ cd /
 $ cd vagrant
 $ python run.py
 ```
-Make sure you have successfully synced the git submodule (See [Deployment](https://github.com/nickzarate/hivemind-analytics#deployment)) and Open `http://localhost:5000`.
+Open `http://localhost:5000`.
 
 Use `exit` to leave the virtual machine set up by vagrant and `vagrant destroy` to terminate it.
 
@@ -36,6 +38,7 @@ Add and commit new changes made in the client code, then push to hivemind-analyt
 ```
 $ git add hivemind/static
 $ git commit -m "Update submodule"
-$ git push
-$ git push heroku master
+$ git push (push to this repository)
+$ git push heroku master (Deploy)
+$ heroku open (Check out the newly deployed app!)
 ```
