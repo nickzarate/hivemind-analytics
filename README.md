@@ -1,14 +1,19 @@
 # Environment Setup
 
-Install [vagrant](https://www.vagrantup.com/)
+Make sure you have successfully synced the git submodule (See [Deployment](https://github.com/nickzarate/hivemind-analytics#deployment))
 
-Make sure you have successfully synced the git submodule (See [Deployment](https://github.com/nickzarate/hivemind-analytics#deployment)) and type in the following commands...
+Setup the Heroku remote
 ```
-$ vagrant up
-$ vagrant ssh
-$ cd /
-$ cd vagrant
-$ python run.py
+heroku git:remote -a hivemind-analytics
+```
+
+Install [vagrant](https://www.vagrantup.com/) and type in the following commands...
+```
+vagrant up
+vagrant ssh
+cd /
+cd vagrant
+python run.py
 ```
 Open `http://localhost:5000`.
 
