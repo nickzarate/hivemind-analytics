@@ -2,7 +2,7 @@ import numpy as np
 from numpy import array, matmul, transpose
 from numpy.linalg import inv
 
-def phi_ols_estimator(covariates, p):
+def phi_ols_estimator(covariates, predictions):
     X = array(covariates)
     X = np.column_stack((
         array(
@@ -13,7 +13,7 @@ def phi_ols_estimator(covariates, p):
     ))
     Xt = transpose(X)
 
-    # phi = inv(Xt * X) * Xt * p
+    # phi = inv(Xt * X) * Xt * predictions
     phi = matmul(
         matmul(
             inv(
@@ -24,6 +24,6 @@ def phi_ols_estimator(covariates, p):
             ),
             Xt
         ),
-        p
+        predictions
     )
     return phi

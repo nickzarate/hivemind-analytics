@@ -14,11 +14,14 @@ def api_echo():
 
 @app.route(root + '/get_phi', methods=['GET','PUT','POST']) # SKETCHY AF
 def get_phi():
+  print request
   payload = request.get_json()
+  print 'before payload'
   print payload
+  print 'after payload'
   covariates = payload[u'covariates']
-  p = payload[u'p']
-  phi = phi_ols_estimator(covariates, p)
+  predictions = payload[u'predictions']
+  phi = phi_ols_estimator(covariates, predictions)
   return jsonify(
     phi = phi.tolist()
   )
